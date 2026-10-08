@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Boda Pablo &amp; Sara | 21 de Noviembre 2026</title>
+
+  <!-- Google Fonts: Cormorant Garamond & Montserrat -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Montserrat:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-cream: #FAF8F5;
+      --gold-primary: #C5A059;
+      --gold-light: #E8D8B0;
+      --gold-dark: #9A7B38;
+      --text-main: #2C2A29;
+      --text-muted: #6E6864;
+      --gold-glow: rgba(197, 160, 89, 0.28);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-cream);
+      color: var(--text-main);
+      font-family: 'Montserrat', sans-serif;
+      overflow-x: hidden;
+      line-height: 1.6;
+      background-image: radial-gradient(rgba(197, 160, 89, 0.08) 1px, transparent 1px);
+      background-size: 26px 26px;
+      position: relative;
+      min-height: 100vh;
+    }
+
+    /* Floating hearts canvas background */
+    #hearts-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Envelope Cover Screen */
+    #envelope-screen {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(circle at center, #FFFFFF 0%, #F5EFE6 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      cursor: pointer;
+      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s ease;
+      user-select: none;
+      padding: 20px;
+    }
+
+    #envelope-screen.opened {
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+
+    .envelope-card {
+      background: #FFFFFF;
+      padding: 38px 28px;
+      border-radius: 28px;
+      box-shadow: 0 20px 48px rgba(154, 123, 56, 0.16), 0 4px 14px rgba(0, 0, 0, 0.03);
+      border: 1px solid rgba(232, 216, 176, 0.85);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: 330px;
+      width: 100%;
+      text-align: center;
+      position: relative;
+    }
+
+    .envelope-tag {
+      font-size: 0.72rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gold-dark);
+      font-weight: 500;
+    }
+
+    .envelope-names {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.3rem;
+      font-weight: 400;
+      color: #222222;
+      margin: 4px 0 10px;
+    }
+
+    .wax-seal {
+      width: 124px;
+      height: 124px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #E5C158 0%, #BA8B26 65%, #7D560B 100%);
+      box-shadow: 0 12px 32px rgba(186, 139, 38, 0.42);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid rgba(255, 255, 255, 0.65);
+      animation: pulseSeal 2.6s infinite ease-in-out;
+      margin: 12px 0 16px;
+      cursor: pointer;
+    }
+
+    @keyframes pulseSeal {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 12px 30px rgba(186, 139, 38, 0.38);
+      }
+      50% {
+        transform: scale(1.05);
+        box-shadow: 0 18px 42px rgba(186, 139, 38, 0.6);
+      }
+    }
+
+    .seal-rings {
+      width: 48px;
+      height: 32px;
+      fill: none;
+      stroke: #FFF5D6;
+      stroke-width: 2.3;
+      filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
+    }
+
+    .seal-text {
+      color: #FFF5D6;
+      font-size: 0.72rem;
+      letter-spacing: 3px;
+      margin-top: 5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-family: 'Cormorant Garamond', serif;
+    }
+
+    .tap-hint {
+      font-size: 0.8rem;
+      letter-spacing: 3px;
+      color: var(--gold-dark);
+      text-transform: uppercase;
+      font-weight: 500;
+      margin-top: 6px;
+    }
+
+    .open-btn-fallback {
+      margin-top: 14px;
+      background: var(--gold-primary);
+      color: #FFFFFF;
+      border: none;
+      padding: 9px 20px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      font-family: 'Montserrat', sans-serif;
+      box-shadow: 0 4px 12px rgba(197, 160, 89, 0.3);
+    }
+
+    /* Floating Music Bar */
+    .music-bar {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 998;
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid var(--gold-light);
+      padding: 9px 16px;
+      border-radius: 50px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 8px 24px rgba(154, 123, 56, 0.16);
+      backdrop-filter: blur(10px);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+
+    .music-bar:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(197, 160, 89, 0.32);
+    }
+
+    .music-waves {
+      display: flex;
+      align-items: center;
+      gap: 2.5px;
+      height: 14px;
+    }
+
+    .music-waves span {
+      width: 2px;
+      height: 100%;
+      background: var(--gold-primary);
+      border-radius: 2px;
+      animation: wave 1.2s infinite ease-in-out;
+    }
+
+    .music-waves span:nth-child(2) { animation-delay: 0.2s; }
+    .music-waves span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes wave {
+      0%, 100% { height: 4px; }
+      50% { height: 14px; }
+    }
+
+    .music-waves.paused span {
+      animation: none;
+      height: 4px;
+    }
+
+    .music-title {
+      font-size: 0.72rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--gold-dark);
+      font-weight: 500;
+    }
+
+    /* Main Continuous Stationery */
+    .invitation-container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 70px 24px 110px;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .rings-header svg {
+      width: 58px;
+      height: 40px;
+      fill: none;
+      stroke: var(--gold-primary);
+      stroke-width: 1.8;
+      margin-bottom: 20px;
+    }
+
+    .names {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3.8rem;
+      font-weight: 300;
+      letter-spacing: 3px;
+      color: #222222;
+      line-height: 1.1;
+      margin-bottom: 18px;
+    }
+
+    .names span {
+      font-style: italic;
+      color: var(--gold-primary);
+      font-size: 3.2rem;
+      margin: 0 8px;
+    }
+
+    .invitation-quote {
+      font-size: 0.9rem;
+      letter-spacing: 2.2px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 26px;
+      font-weight: 300;
+      line-height: 1.6;
+    }
+
+    .bible-verse {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.35rem;
+      font-style: italic;
+      color: var(--gold-dark);
+      max-width: 530px;
+      margin: 0 auto 32px;
+      line-height: 1.7;
+    }
+
+    .bible-citation {
+      display: block;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.74rem;
+      font-style: normal;
+      letter-spacing: 3px;
+      color: var(--gold-primary);
+      margin-top: 10px;
+      text-transform: uppercase;
+    }
+
+    .separator {
+      width: 80px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-primary), transparent);
+      margin: 38px auto;
+    }
+
+    .section-icon {
+      width: 34px;
+      height: 34px;
+      fill: none;
+      stroke: var(--gold-primary);
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      margin: 0 auto 12px;
+      display: block;
+    }
+
+    /* Horizontal Date Presentation */
+    .date-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      margin: 20px 0 8px;
+      flex-wrap: wrap;
+    }
+
+    .date-side {
+      font-size: 1.05rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gold-dark);
+      font-weight: 400;
+    }
+
+    .date-separator-bar {
+      font-size: 1.8rem;
+      color: var(--gold-light);
+      font-weight: 300;
+      user-select: none;
+    }
+
+    .date-center-big {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 4.4rem;
+      font-weight: 600;
+      color: #222222;
+      line-height: 1;
+      padding: 0 4px;
+    }
+
+    .date-time {
+      font-size: 0.88rem;
+      letter-spacing: 3px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.1rem;
+      font-weight: 400;
+      letter-spacing: 2px;
+      color: #222222;
+      margin-bottom: 12px;
+    }
+
+    .place-name {
+      font-size: 1.18rem;
+      font-weight: 500;
+      color: var(--gold-dark);
+      margin-top: 10px;
+    }
+
+    .place-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 5px;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    /* Tarjeta y tabla de tarifas de hospedaje */
+    .rates-card {
+      background: #FFFFFF;
+      border: 1px solid var(--gold-light);
+      border-radius: 16px;
+      padding: 20px 18px;
+      margin: 18px auto 20px;
+      max-width: 480px;
+      box-shadow: 0 6px 20px rgba(197, 160, 89, 0.1);
+      text-align: left;
+    }
+
+    .rates-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      margin-bottom: 12px;
+    }
+
+    .rates-table tr {
+      border-bottom: 1px dashed rgba(197, 160, 89, 0.35);
+    }
+
+    .rates-table tr:last-child {
+      border-bottom: none;
+    }
+
+    .rates-table td {
+      padding: 9px 4px;
+      color: var(--text-main);
+    }
+
+    .rates-table td.price {
+      text-align: right;
+      font-weight: 600;
+      color: var(--gold-dark);
+      white-space: nowrap;
+    }
+
+    .rates-note {
+      font-size: 0.78rem;
+      color: var(--gold-dark);
+      line-height: 1.45;
+      padding-top: 8px;
+      border-top: 1px solid rgba(197, 160, 89, 0.25);
+      font-style: italic;
+    }
+
+    .btn-gold {
+      display: inline-block;
+      padding: 11px 26px;
+      border: 1px solid var(--gold-primary);
+      color: var(--gold-dark);
+      text-decoration: none;
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border-radius: 30px;
+      transition: all 0.3s ease;
+      background: transparent;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .btn-gold:hover {
+      background: var(--gold-primary);
+      color: #FFFFFF;
+      box-shadow: 0 6px 18px rgba(197, 160, 89, 0.35);
+      transform: translateY(-1px);
+    }
+
+    .rsvp-form {
+      max-width: 440px;
+      margin: 22px auto 0;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .rsvp-input {
+      width: 100%;
+      padding: 13px 18px;
+      border: 1px solid rgba(197, 160, 89, 0.45);
+      background: #FFFFFF;
+      border-radius: 10px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.9rem;
+      color: #333333;
+      outline: none;
+      transition: border 0.3s, box-shadow 0.3s;
+    }
+
+    .rsvp-input:focus {
+      border-color: var(--gold-primary);
+      box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.15);
+    }
+
+    /* Checkbox y campos de hospedaje en RSVP */
+    .hotel-rsvp-box {
+      background: #FFFFFF;
+      border: 1px solid rgba(197, 160, 89, 0.4);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 4px 14px rgba(197, 160, 89, 0.08);
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      font-size: 0.88rem;
+      color: var(--text-main);
+      user-select: none;
+      line-height: 1.4;
+    }
+
+    .checkbox-label input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--gold-primary);
+      border-radius: 5px;
+      outline: none;
+      cursor: pointer;
+      display: grid;
+      place-content: center;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+      background: #FFFFFF;
+    }
+
+    .checkbox-label input[type="checkbox"]:checked {
+      background: var(--gold-primary);
+    }
+
+    .checkbox-label input[type="checkbox"]:checked::before {
+      content: "✔";
+      font-size: 0.75rem;
+      color: #FFFFFF;
+    }
+
+    .hotel-guests-field {
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .hotel-guests-field label {
+      font-size: 0.8rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--gold-dark);
+      font-weight: 500;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CANVAS DE CORAZONES FLOTANTES -->
+  <canvas id="hearts-canvas"></canvas>
+
+  <!-- PANTALLA INICIAL: SOBRE CON SELLO DE CERA -->
+  <div id="envelope-screen" onclick="openInvitationSafe()">
+    <div class="envelope-card">
+      <div class="envelope-tag">Nuestra Boda</div>
+      <h2 class="envelope-names">Pablo &amp; Sara</h2>
+
+      <div class="wax-seal">
+        <svg class="seal-rings" viewBox="0 0 54 36">
+          <circle cx="21" cy="18" r="14" />
+          <circle cx="33" cy="18" r="14" />
+          <path d="M 21 4 L 23 8 L 19 8 Z" fill="#FFF5D6" />
+        </svg>
+        <span class="seal-text">P &amp; S</span>
+      </div>
+
+      <p class="tap-hint">Toca el sello para abrir la invitación</p>
+      <button type="button" class="open-btn-fallback" onclick="openInvitationSafe(event)">Abrir Invitación</button>
+    </div>
+  </div>
+
+  <!-- CONTROL FLOTANTE DE MÚSICA -->
+  <div class="music-bar" id="musicBtn" onclick="toggleMusic()">
+    <div class="music-waves" id="musicWaves">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <span class="music-title" id="musicTitleText">♫ Clair de Lune - Debussy (Piano)</span>
+  </div>
+
+  <!-- CONTENEDOR PRINCIPAL CONTINUO -->
+  <div class="invitation-container">
+
+    <!-- ANILLOS ENCABEZADO -->
+    <div class="rings-header">
+      <svg viewBox="0 0 54 36">
+        <circle cx="21" cy="18" r="14" />
+        <circle cx="33" cy="18" r="14" />
+        <path d="M 21 4 L 23 8 L 19 8 Z" fill="var(--gold-primary)" />
+      </svg>
+    </div>
+
+    <h1 class="names">Pablo <span>&amp;</span> Sara</h1>
+
+    <p class="invitation-quote">Te invitamos a compartir con nosotros este día especial en nuestras vidas</p>
+
+    <!-- CITA BÍBLICA -->
+    <div class="bible-verse">
+      «Mejor son dos que uno, porque obtienen más fruto de su esfuerzo. Si caen, el uno levanta al otro... Y la cuerda de tres hilos no se rompe fácilmente.»
+      <span class="bible-citation">Eclesiastés 4:9-10, 12</span>
+    </div>
+
+    <div class="separator"></div>
+
+    <!-- FECHA: Sábado | 21 | Noviembre 2026 -->
+    <div>
+      <svg class="section-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <div class="date-row">
+        <span class="date-side">Sábado</span>
+        <span class="date-separator-bar">|</span>
+        <span class="date-center-big">21</span>
+        <span class="date-separator-bar">|</span>
+        <span class="date-side">Noviembre 2026</span>
+      </div>
+      <div class="date-time">Corregidora, Querétaro</div>
+    </div>
+
+    <div class="separator"></div>
+
+    <!-- UBICACIONES -->
+    <h2 class="section-title">Nuestra Celebración</h2>
+
+    <!-- CEREMONIA RELIGIOSA -->
+    <div class="place-item">
+      <svg class="section-icon" viewBox="0 0 24 24"><path d="M12 2L2 7v15h20V7L12 2z"/><path d="M12 11v6"/><path d="M9 14h6"/><path d="M12 5v2"/></svg>
+      <h3 class="place-name">Ceremonia Religiosa</h3>
+      <p class="place-desc">5:00 PM • Parroquia de San Francisco Galileo<br>Francisco I. Madero #27, El Pueblito, Corregidora, Qro.</p>
+      <a href="https://maps.google.com/?cid=6878084292492439236" target="_blank" rel="noopener noreferrer" class="btn-gold">Abrir en Google Maps</a>
+    </div>
+
+    <!-- RECEPCIÓN & FIESTA -->
+    <div style="margin-top: 40px;">
+      <svg class="section-icon" viewBox="0 0 24 24"><path d="M8 21h8m-4-4v4M6 3l6 9 6-9H6z"/></svg>
+      <h3 class="place-name">Recepción &amp; Fiesta</h3>
+      <p class="place-desc">6:30 PM • La Cabaña del Río<br>Del Río #4, El Pueblito, Corregidora, Qro.</p>
+      <a href="https://maps.google.com/?cid=13739350067362681849" target="_blank" rel="noopener noreferrer" class="btn-gold">Abrir en Google Maps</a>
+    </div>
+
+    <div class="separator"></div>
+
+    <!-- HOSPEDAJE SUGERIDO CON TARIFAS DETALLADAS -->
+    <svg class="section-icon" viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l8-4v18M13 9h6v12"/></svg>
+    <h2 class="section-title">Hospedaje Sugerido</h2>
+    <p class="place-desc">Para su mayor comodidad, les sugerimos este hotel ubicado a pocos minutos del evento:</p>
+    <h3 class="place-name">Hotel Plaza Camelinas</h3>
+    <p class="place-desc">Av. 5 de Febrero #28, La Capilla (cerca de Plaza de Toros Santa María), Santiago de Querétaro.</p>
+
+    <!-- Tarjeta de Precios de Hospedaje -->
+    <div class="rates-card">
+      <table class="rates-table">
+        <tr>
+          <td>Habitación para 2 personas</td>
+          <td class="price">$1,549</td>
+        </tr>
+        <tr>
+          <td>Tarifa con reserva grupal (2 personas)</td>
+          <td class="price">$1,332</td>
+        </tr>
+        <tr>
+          <td>Persona extra</td>
+          <td class="price">$249</td>
+        </tr>
+        <tr>
+          <td>Niños menores a 11 años</td>
+          <td class="price">Sin costo</td>
+        </tr>
+      </table>
+      <div class="rates-note">
+        * Niños menores a 11 años no pagan (máximo 2 niños por habitación).
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+      <a href="https://maps.google.com/?cid=10189528852425998511" target="_blank" rel="noopener noreferrer" class="btn-gold">Ver Ubicación</a>
+      <a href="tel:+524421923900" class="btn-gold">Llamar a Recepción</a>
+    </div>
+
+    <div class="separator"></div>
+
+    <!-- MESA DE REGALOS LIVERPOOL -->
+    <svg class="section-icon" viewBox="0 0 24 24"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+    <h2 class="section-title">Mesa de Regalos</h2>
+    <p class="place-desc">Su presencia es nuestro mayor regalo. Si desean tener un detalle con nosotros, pueden consultar nuestra mesa de regalos en línea:</p>
+    <div style="margin-top: 15px;">
+      <a href="https://mesaderegalos.liverpool.com.mx/milistaderegalos/60038897" target="_blank" rel="noopener noreferrer" class="btn-gold">Mesa de Regalos Liverpool</a>
+    </div>
+
+    <div class="separator"></div>
+
+    <!-- RSVP A WHATSAPP CON OPCIÓN DE HOSPEDAJE -->
+    <svg class="section-icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <h2 class="section-title">Confirmación de Asistencia</h2>
+    <p class="place-desc">Favor de confirmar antes del 17 de octubre de 2026:</p>
+
+    <form class="rsvp-form" onsubmit="sendRSVP(event)">
+      <input type="text" id="guestName" class="rsvp-input" placeholder="Nombre completo" required>
+      <input type="number" id="guestPasses" class="rsvp-input" placeholder="Número de personas al evento" min="1" max="10" value="1" required>
+
+      <!-- Casilla para Hotel -->
+      <div class="hotel-rsvp-box">
+        <label class="checkbox-label">
+          <input type="checkbox" id="useHotel" onchange="toggleHotelField()">
+          <span>Deseo aprovechar la recomendación de hospedaje en Hotel Plaza Camelinas</span>
+        </label>
+
+        <div class="hotel-guests-field" id="hotelGuestsContainer">
+          <label for="hotelGuests">Personas que se hospedarán:</label>
+          <input type="number" id="hotelGuests" class="rsvp-input" placeholder="Cantidad de personas" min="1" max="10" value="2" style="padding: 10px 14px;">
+        </div>
+      </div>
+
+      <input type="text" id="guestNote" class="rsvp-input" placeholder="Mensaje para los novios (opcional)">
+      <button type="submit" class="btn-gold" style="padding: 14px; font-weight: 500; background: var(--gold-primary); color: #FFFFFF;">Confirmar por WhatsApp</button>
+    </form>
+
+  </div>
+
+  <script>
+    /* =========================================================
+       1. ENVELOPE OPENING HANDLER WITH SAFE FAILOVER
+       ========================================================= */
+    function openInvitationSafe(e) {
+      if (e) e.stopPropagation();
+      const screen = document.getElementById('envelope-screen');
+      if (screen) {
+        screen.classList.add('opened');
+      }
+      initAudioAndPlay();
+    }
+
+    window.addEventListener('load', () => {
+      const screen = document.getElementById('envelope-screen');
+      if (screen) {
+        screen.addEventListener('touchend', (e) => {
+          e.preventDefault();
+          openInvitationSafe();
+        });
+      }
+    });
+
+    /* =========================================================
+       2. TOGGLE DE CAMPO DE HOSPEDAJE EN FORMULARIO
+       ========================================================= */
+    function toggleHotelField() {
+      const checkbox = document.getElementById('useHotel');
+      const container = document.getElementById('hotelGuestsContainer');
+      if (checkbox && container) {
+        container.style.display = checkbox.checked ? 'flex' : 'none';
+      }
+    }
+
+    /* =========================================================
+       3. FLOATING HEARTS & GOLDEN STARDUST PARTICLES CANVAS
+       ========================================================= */
+    const canvas = document.getElementById('hearts-canvas');
+    const ctx = canvas.getContext('2d');
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    function drawHeart(c, x, y, size, opacity) {
+      c.save();
+      c.translate(x, y);
+      c.beginPath();
+      const topCurveHeight = size * 0.3;
+      c.moveTo(0, topCurveHeight);
+      c.bezierCurveTo(0, 0, -size / 2, 0, -size / 2, topCurveHeight);
+      c.bezierCurveTo(-size / 2, (size + topCurveHeight) / 2, 0, size, 0, size);
+      c.bezierCurveTo(0, size, size / 2, (size + topCurveHeight) / 2, size / 2, topCurveHeight);
+      c.bezierCurveTo(size / 2, 0, 0, 0, 0, topCurveHeight);
+      c.closePath();
+      c.fillStyle = `rgba(197, 160, 89, ${opacity * 0.6})`;
+      c.shadowColor = 'rgba(212, 175, 55, 0.35)';
+      c.shadowBlur = 5;
+      c.fill();
+      c.restore();
+    }
+
+    class FloatingHeart {
+      constructor(initial = false) {
+        this.reset(initial);
+      }
+      reset(initial = false) {
+        this.x = Math.random() * width;
+        this.y = initial ? Math.random() * height : height + 25;
+        this.size = Math.random() * 11 + 7;
+        this.speedY = Math.random() * 0.6 + 0.3;
+        this.opacity = Math.random() * 0.4 + 0.15;
+        this.sway = Math.random() * Math.PI * 2;
+        this.swaySpeed = Math.random() * 0.02 + 0.01;
+      }
+      update() {
+        this.y -= this.speedY;
+        this.sway += this.swaySpeed;
+        this.x += Math.sin(this.sway) * 0.45;
+        if (this.y < -35) {
+          this.reset(false);
+        }
+      }
+      draw() {
+        drawHeart(ctx, this.x, this.y, this.size, this.opacity);
+      }
+    }
+
+    const particles = [];
+    const PARTICLE_COUNT = 22;
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push(new FloatingHeart(true));
+    }
+
+    function animateHearts() {
+      ctx.clearRect(0, 0, width, height);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animateHearts);
+    }
+    animateHearts();
+
+    /* =========================================================
+       4. ROBUST PIANO SYNTHESIZER: CLAIR DE LUNE (DEBUSSY)
+       ========================================================= */
+    let audioCtx = null;
+    let isPlaying = false;
+    let melodyTimer = null;
+
+    const N = {
+      Db3: 138.59, Eb3: 155.56, F3: 174.61, Gb3: 185.00, Ab3: 207.65, Bb3: 233.08, C4: 261.63,
+      Db4: 277.18, Eb4: 311.13, F4: 349.23, Gb4: 369.99, Ab4: 415.30, Bb4: 466.16, C5: 523.25,
+      Db5: 554.37, Eb5: 622.25, F5: 698.46, Gb5: 739.99, Ab5: 830.61, Bb5: 932.33
+    };
+
+    const clairDeLune = [
+      { m: N.F5, b: N.Db3, d: 1.10 },
+      { m: N.Eb5, b: null, d: 1.00 },
+      { m: N.Db5, b: N.F3, d: 1.25 },
+      { m: N.C5, b: null, d: 0.85 },
+      { m: N.Bb4, b: N.Gb3, d: 1.15 },
+      { m: N.Ab4, b: null, d: 1.35 },
+      { m: N.F5, b: N.Db3, d: 1.10 },
+      { m: N.Eb5, b: null, d: 0.95 },
+      { m: N.Db5, b: N.Ab3, d: 1.20 },
+      { m: N.C5, b: null, d: 0.80 },
+      { m: N.Bb4, b: N.F3, d: 1.10 },
+      { m: N.C5, b: null, d: 0.85 },
+      { m: N.Db5, b: N.Db3, d: 1.55 },
+      { m: N.Ab4, b: N.Db3, d: 0.70 },
+      { m: N.C5, b: null, d: 0.70 },
+      { m: N.Eb5, b: N.Ab3, d: 0.85 },
+      { m: N.Ab5, b: null, d: 1.35 },
+      { m: N.Gb5, b: N.Gb3, d: 0.90 },
+      { m: N.F5, b: null, d: 0.90 },
+      { m: N.Eb5, b: N.Bb3, d: 1.10 },
+      { m: N.Db5, b: null, d: 1.15 },
+      { m: N.C5, b: N.Ab3, d: 0.95 },
+      { m: N.Bb4, b: null, d: 0.85 },
+      { m: N.Ab4, b: N.Db3, d: 2.10 }
+    ];
+
+    function playPianoTone(freq, vol, dur) {
+      if (!audioCtx || !freq) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+        gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(vol, audioCtx.currentTime + 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur * 1.55);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + dur * 1.6);
+      } catch (err) {}
+    }
+
+    let noteIdx = 0;
+    function playLoop() {
+      if (!isPlaying) return;
+      const n = clairDeLune[noteIdx];
+      playPianoTone(n.m, 0.15, n.d);
+      if (n.b) playPianoTone(n.b, 0.09, n.d * 1.4);
+
+      noteIdx = (noteIdx + 1) % clairDeLune.length;
+      melodyTimer = setTimeout(playLoop, n.d * 860);
+    }
+
+    function initAudioAndPlay() {
+      try {
+        if (!audioCtx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) audioCtx = new AudioContextClass();
+        }
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        if (!isPlaying) {
+          isPlaying = true;
+          noteIdx = 0;
+          playLoop();
+          updateMusicUI();
+        }
+      } catch (e) {}
+    }
+
+    function toggleMusic() {
+      if (isPlaying) {
+        clearTimeout(melodyTimer);
+        isPlaying = false;
+      } else {
+        initAudioAndPlay();
+      }
+      updateMusicUI();
+    }
+
+    function updateMusicUI() {
+      const waves = document.getElementById('musicWaves');
+      if (waves) {
+        if (isPlaying) {
+          waves.classList.remove('paused');
+        } else {
+          waves.classList.add('paused');
+        }
+      }
+    }
+
+    /* =========================================================
+       5. WHATSAPP RSVP DISPATCHER CON INFORMACIÓN DE HOSPEDAJE
+       ========================================================= */
+    function sendRSVP(e) {
+      e.preventDefault();
+      const name = document.getElementById('guestName').value.trim();
+      const passes = document.getElementById('guestPasses').value;
+      const useHotel = document.getElementById('useHotel').checked;
+      const hotelGuests = document.getElementById('hotelGuests').value;
+      const note = document.getElementById('guestNote').value.trim();
+
+      let msg = `¡Hola Pablo y Sara! Con mucho gusto confirmo mi asistencia a su boda el 21 de Noviembre.%0A%0A`;
+      msg += `*Nombre:* ${encodeURIComponent(name)}%0A`;
+      msg += `*Pases reservados:* ${passes}%0A`;
+
+      if (useHotel) {
+        msg += `*Hospedaje sugerido:* Sí, nos hospedaremos en Plaza Camelinas (${hotelGuests} personas)%0A`;
+      } else {
+        msg += `*Hospedaje sugerido:* No requiero hospedaje%0A`;
+      }
+
+      if (note) {
+        msg += `*Mensaje:* ${encodeURIComponent(note)}`;
+      }
+
+      window.open(`https://api.whatsapp.com/send?phone=525539330235&text=${msg}`, '_blank');
+    }
+  </script>
+</body>
+</html>
